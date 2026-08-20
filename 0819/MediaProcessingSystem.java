@@ -1,41 +1,40 @@
-// 抽象基底類別：所有媒體檔案共同的屬性與行為
 abstract class MediaFile {
     private final String fileName;
     private long sizeKb;
 
     MediaFile(String fileName, long sizeKb) {
-        this.fileName = fileName;
-        this.sizeKb = sizeKb;
+        this.fileName = (fileName == null || fileName.isBlank()) ? "untitled" : fileName;
+        this.sizeKb = Math.max(0, sizeKb);
     }
 
     String getFileName() { return fileName; }
     long getSizeKb()     { return sizeKb; }
 
-    protected void setSizeKb(long sizeKb) { this.sizeKb = sizeKb; }
+    protected void setSizeKb(long sizeKb) { this.sizeKb = Math.max(0, sizeKb); }
 
     abstract String describe();
+
+    abstract String operations();
 }
 
-// 能力介面：可播放
 interface Playable {
     String play();
     String stop();
 }
 
-// 能力介面：可壓縮
 interface Compressible {
-    long compress(int level);
+    boolean compress(int level);
 }
 
-// 圖片：壓縮/不可播放
 class ImageFile extends MediaFile implements Compressible {
     private final int width;
     private final int height;
+    private boolean compressed;
 
     ImageFile(String fileName, long sizeKb, int width, int height) {
         super(fileName, sizeKb);
-        this.width = width;
-        this.height = height;
+        this.width = Math.max(1, width);
+        this.height = Math.max(1, height);
     }
 
     @Override
@@ -44,19 +43,29 @@ class ImageFile extends MediaFile implements Compressible {
     }
 
     @Override
-    public long compress(int level) {
+    public boolean compress(int level) {
+        if (compressed || level < 1 || level > 9) {
+            return false;
+        }
         setSizeKb(getSizeKb() * (10 - level) / 10);
-        return getSizeKb();
+        compressed = true;
+        return true;
+    }
+
+    @Override
+    String operations() {
+        boolean ok = compress(3);
+        return "  壓縮(3)=" + ok + " 大小=" + getSizeKb() + "KB";
     }
 }
 
-// 音訊：播放/壓縮
 class AudioFile extends MediaFile implements Playable, Compressible {
     private final int seconds;
+    private boolean compressed;
 
     AudioFile(String fileName, long sizeKb, int seconds) {
         super(fileName, sizeKb);
-        this.seconds = seconds;
+        this.seconds = Math.max(0, seconds);
     }
 
     @Override
@@ -71,21 +80,32 @@ class AudioFile extends MediaFile implements Playable, Compressible {
     public String stop() { return "停止音訊 " + getFileName(); }
 
     @Override
-    public long compress(int level) {
+    public boolean compress(int level) {
+        if (compressed || level < 1 || level > 9) {
+            return false;
+        }
         setSizeKb(getSizeKb() * (10 - level) / 10);
-        return getSizeKb();
+        compressed = true;
+        return true;
+    }
+
+    @Override
+    String operations() {
+        boolean ok = compress(3);
+        return "  " + play() + "\n  " + stop()
+                + "\n  壓縮(3)=" + ok + " 大小=" + getSizeKb() + "KB";
     }
 }
 
-// 影片：播放/壓縮
 class VideoFile extends MediaFile implements Playable, Compressible {
     private final int seconds;
     private final String resolution;
+    private boolean compressed;
 
     VideoFile(String fileName, long sizeKb, int seconds, String resolution) {
         super(fileName, sizeKb);
-        this.seconds = seconds;
-        this.resolution = resolution;
+        this.seconds = Math.max(0, seconds);
+        this.resolution = (resolution == null || resolution.isBlank()) ? "480p" : resolution;
     }
 
     @Override
@@ -100,9 +120,20 @@ class VideoFile extends MediaFile implements Playable, Compressible {
     public String stop() { return "停止影片 " + getFileName(); }
 
     @Override
-    public long compress(int level) {
+    public boolean compress(int level) {
+        if (compressed || level < 1 || level > 9) {
+            return false;
+        }
         setSizeKb(getSizeKb() * (10 - level) / 10);
-        return getSizeKb();
+        compressed = true;
+        return true;
+    }
+
+    @Override
+    String operations() {
+        boolean ok = compress(3);
+        return "  " + play() + "\n  " + stop()
+                + "\n  壓縮(3)=" + ok + " 大小=" + getSizeKb() + "KB";
     }
 }
 
@@ -113,7 +144,6 @@ public class MediaProcessingSystem {
             new AudioFile("abc.mp3", 48000, 234),
             new VideoFile("demo.mp4", 51200, 100, "800x600")
         };
-
         System.out.println("=== 檔案清單 ===");
         for (MediaFile f : library) {
             System.out.println("  " + f.describe());
@@ -122,13 +152,17 @@ public class MediaProcessingSystem {
         System.out.println("\n=== 各檔案支援的操作 ===");
         for (MediaFile f : library) {
             System.out.println("[" + f.getFileName() + "]");
-            if (f instanceof Playable p) {
-                System.out.println("  " + p.play());
-                System.out.println("  " + p.stop());
-            }
-            if (f instanceof Compressible c) {
-                System.out.println("  壓縮(3) -> " + c.compress(3) + "KB");
-            }
+            System.out.println(f.operations());
         }
+        System.out.println("\n=== 邊界測試 ===");
+        MediaFile odd = new ImageFile(null, -500, -10, 0);
+        System.out.println("  null 檔名/負數     " + odd.describe());
+        ImageFile img = new ImageFile("a.png", 1000, 10, 10);
+        System.out.println("  壓縮等級 11        " + img.compress(11));
+        System.out.println("  壓縮等級 0         " + img.compress(0));
+        System.out.println("  壓縮等級 3         " + img.compress(3) + " 大小=" + img.getSizeKb() + "KB");
+        System.out.println("  重複壓縮           " + img.compress(3) + " 大小=" + img.getSizeKb() + "KB");
+        MediaFile noRes = new VideoFile("clip.mp4", 800, -50, "  ");
+        System.out.println("  空白解析度/負秒數  " + noRes.describe());
     }
 }

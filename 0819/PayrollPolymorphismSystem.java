@@ -14,7 +14,7 @@ abstract class Employee {
     abstract String payType();
     @Override
     public String toString() {
-        return String.format("%-6s %-6s %-8s %-8s %8d",
+        return String.format("%-6s %-9s %-8s %-8s %8d",
                 id, name, department, payType(), calculatePay());
     }
 }
@@ -87,6 +87,9 @@ class SalesEmployee extends Employee {
 
 public class PayrollPolymorphismSystem {
     static int totalPay(Employee[] employees) {
+        if (employees == null) {
+            return 0;
+        }
         int sum = 0;
         for (Employee e : employees) {
             if (e != null) {
@@ -96,6 +99,9 @@ public class PayrollPolymorphismSystem {
         return sum;
     }
     static Employee highestPaid(Employee[] employees) {
+        if (employees == null) {
+            return null;
+        }
         Employee best = null;
         for (Employee e : employees) {
             if (e == null) {
@@ -108,6 +114,9 @@ public class PayrollPolymorphismSystem {
         return best;
     }
     static double averagePay(Employee[] employees) {
+        if (employees == null) {
+            return 0.0;
+        }
         int count = 0;
         for (Employee e : employees) {
             if (e != null) {
@@ -115,6 +124,27 @@ public class PayrollPolymorphismSystem {
             }
         }
         return count == 0 ? 0.0 : (double) totalPay(employees) / count;
+    }
+    static void printReport(String label, Employee[] payroll) {
+        System.out.println("=== " + label + " ===");
+        System.out.printf("%-6s %-9s %-8s %-8s %8s%n", "編號", "姓名", "部門", "類型", "薪資");
+        if (payroll != null) {
+            for (Employee e : payroll) {
+                if (e != null) {
+                    System.out.println(e);
+                }
+            }
+        }
+        System.out.println("薪資總額：" + totalPay(payroll));
+        System.out.printf("平均薪資：%.1f%n", averagePay(payroll));
+        Employee top = highestPaid(payroll);
+        if (top == null) {
+            System.out.println("最高薪資：無資料");
+        } else {
+            System.out.println("最高薪資：" + top.getName() + " " + top.calculatePay()
+                    + "（" + top.payType() + "）");
+        }
+        System.out.println();
     }
     public static void main(String[] args) {
         Employee[] payroll = {
@@ -125,19 +155,15 @@ public class PayrollPolymorphismSystem {
             new SalesEmployee       ("E105", "Jennifer",  "業務", 29000, 820_000, 5),
             new SalesEmployee       ("E106", "Vivian", "業務", 29000, 310_000, 5)
         };
-        System.out.println("=== 薪資明細 ===");
-        System.out.printf("%-6s %-6s %-8s %-8s %8s%n", "編號", "姓名", "部門", "類型", "薪資");
-        for (Employee e : payroll) {
-            System.out.println(e);
-        }
-        System.out.println();
-        System.out.println("=== 統計 ===");
-        System.out.println("薪資總額：" + totalPay(payroll));
-        System.out.printf("平均薪資：%.1f%n", averagePay(payroll));
-        Employee top = highestPaid(payroll);
-        System.out.println("最高薪資：" + top.getName() + " " + top.calculatePay()
-                + "（" + top.payType() + "）");
-        System.out.println();
-
+        printReport("薪資明細", payroll);
+		
+        System.out.println("=== 邊界測試 ===");
+        printReport("含 null 員工與空白欄位", new Employee[]{
+            null,
+            new MonthlySalaryEmployee(null, "  ", null, -5000, true),
+            new HourlyEmployee("E199", "Test", "測試", -100, -20)
+        });
+        printReport("空陣列", new Employee[0]);
+        printReport("陣列為 null", null);
     }
 }
