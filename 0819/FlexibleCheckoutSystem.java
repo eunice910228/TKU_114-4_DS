@@ -16,7 +16,8 @@ class StandardPricing implements PricingPolicy {
 class VipPricing implements PricingPolicy {
     @Override
     public int finalPrice(int originalPrice) {
-        return Math.max(0, originalPrice) * 85 / 100;
+        long price = Math.max(0, originalPrice);
+        return (int) (price * 85 / 100);
     }
 
     @Override
@@ -42,28 +43,39 @@ interface NotificationChannel {
     String channelName();
 }
 
-class EmailChannel implements NotificationChannel {
+abstract class AbstractNotificationChannel implements NotificationChannel {
+
     @Override
-    public boolean send(String receiver, String message) {
-        if (receiver == null || !receiver.contains("@")) {
+    public final boolean send(String receiver, String message) {
+        if (!isValidReceiver(receiver)) {
             return false;
         }
-        System.out.println("    EMAIL " + receiver + " -> " + message);
+        String text = (message == null) ? "" : message;
+        System.out.printf("    %-7s %s -> %s%n", channelName().toUpperCase(), receiver, text);
         return true;
+    }
+
+    protected abstract boolean isValidReceiver(String receiver);
+}
+
+class EmailChannel extends AbstractNotificationChannel {
+    @Override
+    protected boolean isValidReceiver(String receiver) {
+        if (receiver == null || receiver.isBlank()) {
+            return false;
+        }
+        int at = receiver.indexOf('@');
+        return at > 0 && at < receiver.length() - 1;
     }
 
     @Override
     public String channelName() { return "Email"; }
 }
 
-class SmsChannel implements NotificationChannel {
+class SmsChannel extends AbstractNotificationChannel {
     @Override
-    public boolean send(String receiver, String message) {
-        if (!isMobileNumber(receiver)) {
-            return false;
-        }
-        System.out.println("    SMS   " + receiver + " -> " + message);
-        return true;
+    protected boolean isValidReceiver(String receiver) {
+        return isMobileNumber(receiver);
     }
 
     @Override
@@ -85,14 +97,10 @@ class SmsChannel implements NotificationChannel {
     }
 }
 
-class ConsoleChannel implements NotificationChannel {
+class ConsoleChannel extends AbstractNotificationChannel {
     @Override
-    public boolean send(String receiver, String message) {
-        if (receiver == null || receiver.isBlank()) {
-            return false;
-        }
-        System.out.println("    CONSOLE " + receiver + " -> " + message);
-        return true;
+    protected boolean isValidReceiver(String receiver) {
+        return receiver != null && !receiver.isBlank();
     }
 
     @Override
@@ -108,11 +116,11 @@ class CheckoutResult {
 
     CheckoutResult(String orderId, int originalPrice, int finalPrice,
                    boolean notified, String note) {
-        this.orderId = orderId;
-        this.originalPrice = originalPrice;
-        this.finalPrice = finalPrice;
+        this.orderId = (orderId == null || orderId.isBlank()) ? "UNKNOWN" : orderId;
+        this.originalPrice = Math.max(0, originalPrice);
+        this.finalPrice = Math.max(0, finalPrice);
         this.notified = notified;
-        this.note = note;
+        this.note = (note == null) ? "" : note;
     }
 
     String getOrderId()   { return orderId; }
@@ -123,8 +131,10 @@ class CheckoutResult {
 
     @Override
     public String toString() {
-        return String.format("%-6s 原價=%5d 實付=%5d 折抵=%4d 通知=%-5s %s",
-                orderId, originalPrice, finalPrice, savedAmount(), notified, note);
+        return String.format("%-7s 原價=%,7d  實付=%,7d  折抵=%,6d  通知=%s%s",
+                orderId, originalPrice, finalPrice, savedAmount(),
+                notified ? "成功" : "失敗",
+                note.isEmpty() ? "" : "  " + note);
     }
 }
 
@@ -147,8 +157,7 @@ class CheckoutService {
             return new CheckoutResult(id, 0, 0, false, "金額不合法");
         }
         int amount = pricing.finalPrice(originalPrice);
-        boolean ok = channel.send(receiver,
-                "order=" + id + ", amount=" + amount);
+        boolean ok = channel.send(receiver, "訂單號碼=" + id + ", 金額=" + amount);
         return new CheckoutResult(id, originalPrice, amount, ok,
                 ok ? "" : "通知失敗（收件資訊不合法）");
     }
@@ -162,7 +171,7 @@ public class FlexibleCheckoutSystem {
         NotificationChannel[] channels = {
             new EmailChannel(), new SmsChannel(), new ConsoleChannel()
         };
-        String[] receivers = { "amy@example.com", "0912345678", "counter-01" };
+        String[] receivers = { "Eunice@123.com", "0912345678", "counter-01" };
 
         System.out.println("=== 3 種計價 × 3 種管道 = 9 種組合 ===");
         int orderNo = 1000;
@@ -176,26 +185,44 @@ public class FlexibleCheckoutSystem {
         }
 
         System.out.println();
-        System.out.println("=== 同一組合、不同金額（看折扣門檻的差異）===");
+        System.out.println("=== 同一組合、不同金額 ===");
         CheckoutService thresholdConsole =
                 new CheckoutService(new ThresholdDiscountPricing(), new ConsoleChannel());
         for (int price : new int[]{ 1999, 2000, 2001, 5000 }) {
-            CheckoutResult r = thresholdConsole.checkout("O" + (++orderNo), price, "counter-01");
-            System.out.println("    " + r);
+            System.out.println("    " + thresholdConsole.checkout("O" + (++orderNo), price, "counter-01"));
         }
 
         System.out.println();
-        System.out.println("=== 通知失敗仍要回傳完整結果 ===");
+        System.out.println("=== 測試通知失敗 ===");
         CheckoutService vipEmail = new CheckoutService(new VipPricing(), new EmailChannel());
         System.out.println("    " + vipEmail.checkout("O2001", 2000, "not-an-email"));
         System.out.println("    " + vipEmail.checkout("O2002", 2000, null));
 
         System.out.println();
-        System.out.println("=== 邊界測試 ===");
-        System.out.println("    " + vipEmail.checkout(null, -500, "amy@example.com"));
-        System.out.println("    " + vipEmail.checkout("O2003", 0, "amy@example.com"));
+        System.out.println("=== 金額邊界測試 ===");
+        System.out.println("    " + vipEmail.checkout(null, -500, "eunice@123.com"));
+        System.out.println("    " + vipEmail.checkout("O2003", 0, "eunice@123.com"));
+        CheckoutService vipConsole = new CheckoutService(new VipPricing(), new ConsoleChannel());
+        System.out.println("    " + vipConsole.checkout("O2004", 100_000_000, "counter-01"));
+        System.out.println("    " + vipConsole.checkout("O2005", Integer.MAX_VALUE, "counter-01"));
+
+        System.out.println();
+        System.out.println("=== 收件資訊邊界測試 ===");
+        String[] bad = { null, "", "   ", "abc", "@", "a@", "@b", "091234567", "0812345678" };
+        for (NotificationChannel c : channels) {
+            StringBuilder sb = new StringBuilder();
+            for (String r : bad) {
+                if (!c.send(r, "test")) {
+                    sb.append(r == null ? "null" : "\"" + r + "\"").append(' ');
+                }
+            }
+            System.out.printf("    %-7s 拒絕：%s%n", c.channelName(), sb.toString().trim());
+        }
+
+        System.out.println();
+        System.out.println("=== 傳 null 時的預設組合 ===");
         CheckoutService fallback = new CheckoutService(null, null);
-        System.out.println("  [" + fallback.comboName() + "]（傳 null 時的預設組合）");
-        System.out.println("    " + fallback.checkout("O2004", 1200, "counter-01"));
+        System.out.println("  [" + fallback.comboName() + "]");
+        System.out.println("    " + fallback.checkout("O2006", 1200, "counter-01"));
     }
 }
