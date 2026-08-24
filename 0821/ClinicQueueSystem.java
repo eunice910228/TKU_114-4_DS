@@ -109,7 +109,7 @@ public class ClinicQueueSystem {
         System.out.println("查詢等候位置");
         System.out.println("  E001 = 第 " + clinic.positionOf("E001") + " 位");
         System.out.println("  E004 = 第 " + clinic.positionOf("E004") + " 位");
-        System.out.println("  E999 = " + clinic.positionOf("E999") + " 表示不在等候中");
+        System.out.println("  E022 = " + clinic.positionOf("E022") + " 表示不在等候中");
         System.out.println();
         System.out.println("叫號，先掛先看");
         System.out.println("  peekNext() = " + clinic.peekNext() + " 只看不叫");
@@ -123,7 +123,7 @@ public class ClinicQueueSystem {
         clinic.printWaiting();
         System.out.println();
         System.out.println("取消不存在或已看診的病歷號");
-        System.out.println("  取消 P999 = " + clinic.cancel("E999"));
+        System.out.println("  取消 E022 = " + clinic.cancel("E022"));
         System.out.println("  取消 E001 = " + clinic.cancel("E001"));
         System.out.println("  取消 E004 = " + clinic.cancel("E004"));
         System.out.println();
