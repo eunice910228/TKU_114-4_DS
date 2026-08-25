@@ -5,6 +5,7 @@ public class RecursiveTextTools {
         }
         return reverse(text.substring(1)) + text.charAt(0);
     }
+
     static boolean isPalindrome(String text) {
         if (text == null) {
             return true;
@@ -32,6 +33,13 @@ public class RecursiveTextTools {
         }
         return check(text, left + 1, right - 1);
     }
+    static int countCharacter(String text, char target) {
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        int here = (text.charAt(0) == target) ? 1 : 0;
+        return here + countCharacter(text.substring(1), target);
+    }
     public static void main(String[] args) {
         System.out.println("reverse");
         System.out.println("  \"\" -> \"" + reverse("") + "\"");
@@ -44,6 +52,10 @@ public class RecursiveTextTools {
         System.out.println("  \"Level\" -> " + isPalindrome("Level"));
         System.out.println("  \"never odd or even\" -> " + isPalindrome("never odd or even"));
         System.out.println("  \"Java\" -> " + isPalindrome("Java"));
-
+        System.out.println("countCharacter");
+        System.out.println("  \"banana\" 中的 a = " + countCharacter("banana", 'a'));
+        System.out.println("  \"banana\" 中的 z = " + countCharacter("banana", 'z'));
+        System.out.println("  \"\" 中的 a = " + countCharacter("", 'a'));
+		System.out.println("  null -> \"" + reverse(null) + "\"");
     }
 }
