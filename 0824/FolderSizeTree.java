@@ -9,9 +9,7 @@ class FolderNode {
         this.ownSize = ownSize;
     }
 }
-
 public class FolderSizeTree {
-
     // postorder：先算左右 subtree，再加自己
     static int subtreeSize(FolderNode node) {
         if (node == null) {
@@ -21,7 +19,6 @@ public class FolderSizeTree {
         int right = subtreeSize(node.right);
         return left + right + node.ownSize;
     }
-
     static void printAllSizes(FolderNode node) {
         if (node == null) {
             return;
@@ -30,7 +27,21 @@ public class FolderSizeTree {
         printAllSizes(node.right);
         System.out.println("  " + node.name + " subtree = " + subtreeSize(node) + " KB");
     }
-
+    static FolderNode largestChildSubtree(FolderNode root) {
+        if (root == null) {
+            return null;
+        }
+        return largest(root.left, root.right);
+    }
+    private static FolderNode largest(FolderNode a, FolderNode b) {
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
+        return subtreeSize(a) >= subtreeSize(b) ? a : b;
+    }
     static void printLeafFolders(FolderNode node) {
         if (node == null) {
             return;
@@ -42,7 +53,6 @@ public class FolderSizeTree {
         printLeafFolders(node.left);
         printLeafFolders(node.right);
     }
-
     public static void main(String[] args) {
         FolderNode root = new FolderNode("root", 10);
         root.left = new FolderNode("photos", 500);
@@ -57,9 +67,12 @@ public class FolderSizeTree {
 
         System.out.println("總大小 = " + subtreeSize(root) + " KB");
 
+        FolderNode biggest = largestChildSubtree(root);
+        System.out.println("最大 subtree = " + biggest.name
+                + "（" + subtreeSize(biggest) + " KB）");
+
         System.out.println("leaf folder");
         printLeafFolders(root);
-
         System.out.println("empty tree 總大小 = " + subtreeSize(null) + " KB");
     }
 }
