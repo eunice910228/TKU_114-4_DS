@@ -72,7 +72,7 @@ class DeliveryWorkflow {
         for (Delivery delivery : waiting) {
             sum = sum + delivery.getWeightKg();
         }
-        return sum;
+        return Math.round(sum * 10) / 10.0;
     }
     void printSummary() {
         System.out.println("  Queue 等候 = " + waiting);
