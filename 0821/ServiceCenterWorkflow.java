@@ -139,13 +139,13 @@ public class ServiceCenterWorkflow {
         System.out.println("findById(A01) =" + center.findById("A01"));
         System.out.println("findById(A04) =" + center.findById("A04"));
         System.out.println("findById(A77) =" + center.findById("A77"));
-        System.out.println("連續處理到空");
+        //System.out.println("連續處理到空");
         while (center.waitingCount() > 0) {
             System.out.println("processNext() =" + center.processNext());
         }
         System.out.println("processNext() = " + center.processNext());
         center.printSummary();
-        System.out.println("取消後的 id 仍不可重用");
+        //System.out.println("取消後的 id 仍不可重用");
         System.out.println("再建 A04 =" + center.createTicket("A04", "新客人", "新問題"));
     }
 }
