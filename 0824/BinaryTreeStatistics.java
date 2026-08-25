@@ -2,7 +2,6 @@ class StatNode {
     int value;
     StatNode left;
     StatNode right;
-
     StatNode(int value) {
         this.value = value;
     }
@@ -20,7 +19,6 @@ public class BinaryTreeStatistics {
         }
         return node.value + sum(node.left) + sum(node.right);
     }
-   // 回傳 Integer
     static Integer maximum(StatNode node) {
         if (node == null) {
             return null;
