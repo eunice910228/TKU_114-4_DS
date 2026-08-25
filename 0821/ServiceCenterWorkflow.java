@@ -135,7 +135,7 @@ public class ServiceCenterWorkflow {
         System.out.println("第2次 =" + center.undoLastCompletion());
         center.printSummary();
         System.out.println("第3次 =" + center.undoLastCompletion());
-        System.out.println("findById，已取消或已完成的也查得到");
+        //System.out.println("findById，已取消或已完成的也查得到");
         System.out.println("findById(A01) =" + center.findById("A01"));
         System.out.println("findById(A04) =" + center.findById("A04"));
         System.out.println("findById(A77) =" + center.findById("A77"));
