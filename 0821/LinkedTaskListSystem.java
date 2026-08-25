@@ -15,7 +15,6 @@ class Task {
         return id + " " + title + " P" + priority;
     }
 }
-
 class TaskNode {
     Task task;
     TaskNode next;
@@ -24,7 +23,6 @@ class TaskNode {
         this.next = null;
     }
 }
-
 class TaskLinkedList {
     private TaskNode head;
     private TaskNode tail;
@@ -88,7 +86,6 @@ class TaskLinkedList {
                 + " head=" + head.task.getId() + " tail=" + tail.task.getId());
     }
 }
-
 public class LinkedTaskListSystem {
     static void show(String label, boolean ok, TaskLinkedList list) {
         System.out.println("  " + label + " = " + ok);
