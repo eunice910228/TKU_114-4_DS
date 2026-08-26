@@ -13,19 +13,15 @@ public class Q01_InventoryItem {
         this.name = name.trim();
         this.stock = Math.max(0, stock);
     }
-
     public String getId() {
         return id;
     }
-
     public String getName() {
         return name;
     }
-
     public int getStock() {
         return stock;
     }
-
     public boolean restock(int amount) {
         if (amount <= 0) {
             return false;
@@ -33,7 +29,6 @@ public class Q01_InventoryItem {
         stock = stock + amount;
         return true;
     }
-
     public boolean sell(int amount) {
         if (amount <= 0 || amount > stock) {
             return false;
@@ -41,11 +36,9 @@ public class Q01_InventoryItem {
         stock = stock - amount;
         return true;
     }
-
     public String status() {
         return id + "|" + name + "|" + stock;
     }
-
     public static void main(String[] args) {
         Q01_InventoryItem item = new Q01_InventoryItem(" P100 ", " Keyboard ", 5);
         System.out.println(item.restock(3));
