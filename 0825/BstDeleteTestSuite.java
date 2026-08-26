@@ -2,7 +2,6 @@ class SuiteNode {
     int value;
     SuiteNode left;
     SuiteNode right;
-
     SuiteNode(int value) {
         this.value = value;
     }
@@ -10,11 +9,9 @@ class SuiteNode {
 
 class SuiteBst {
     private SuiteNode root;
-
     void add(int value) {
         root = add(root, value);
     }
-
     private SuiteNode add(SuiteNode node, int value) {
         if (node == null) {
             return new SuiteNode(value);
@@ -26,7 +23,6 @@ class SuiteBst {
         }
         return node;
     }
-
     boolean contains(int value) {
         SuiteNode current = root;
         while (current != null) {
@@ -37,7 +33,6 @@ class SuiteBst {
         }
         return false;
     }
-
     boolean remove(int value) {
         if (!contains(value)) {
             return false;
@@ -45,7 +40,6 @@ class SuiteBst {
         root = remove(root, value);
         return true;
     }
-
     private SuiteNode remove(SuiteNode node, int value) {
         if (node == null) {
             return null;
@@ -70,24 +64,20 @@ class SuiteBst {
         }
         return node;
     }
-
     int size() {
         return size(root);
     }
-
     private int size(SuiteNode node) {
         if (node == null) {
             return 0;
         }
         return 1 + size(node.left) + size(node.right);
     }
-
     String inorderText() {
         StringBuilder sb = new StringBuilder();
         inorderText(root, sb);
         return sb.toString().trim();
     }
-
     private void inorderText(SuiteNode node, StringBuilder sb) {
         if (node == null) {
             return;
@@ -99,12 +89,10 @@ class SuiteBst {
 }
 
 public class BstDeleteTestSuite {
-
     static void show(String label, SuiteBst tree, boolean result) {
         System.out.println("  " + label + " = " + result
                 + "，inorder = [" + tree.inorderText() + "]，size = " + tree.size());
     }
-
     public static void main(String[] args) {
         System.out.println("empty tree 刪除");
         SuiteBst empty = new SuiteBst();
@@ -135,9 +123,14 @@ public class BstDeleteTestSuite {
         }
         show("remove(50)", twoChildren, twoChildren.remove(50));
 
+        System.out.println("連續刪除到 empty");
+        SuiteBst drain = new SuiteBst();
         for (int value : new int[]{ 50, 30, 70, 20, 40 }) {
+            drain.add(value);
         }
         for (int value : new int[]{ 30, 50, 20, 70, 40 }) {
+            show("remove(" + value + ")", drain, drain.remove(value));
         }
+        show("remove(40)", drain, drain.remove(40));
     }
 }
