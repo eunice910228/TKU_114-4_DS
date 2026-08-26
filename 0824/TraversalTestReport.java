@@ -12,15 +12,12 @@ class CaseNode {
         this.value = value;
     }
 }
-
 public class TraversalTestReport {
-
     static List<String> preorder(CaseNode node) {
         List<String> result = new ArrayList<>();
         pre(node, result);
         return result;
     }
-
     private static void pre(CaseNode node, List<String> result) {
         if (node == null) {
             return;
@@ -29,13 +26,11 @@ public class TraversalTestReport {
         pre(node.left, result);
         pre(node.right, result);
     }
-
     static List<String> inorder(CaseNode node) {
         List<String> result = new ArrayList<>();
         in(node, result);
         return result;
     }
-
     private static void in(CaseNode node, List<String> result) {
         if (node == null) {
             return;
@@ -50,7 +45,6 @@ public class TraversalTestReport {
         post(node, result);
         return result;
     }
-
     private static void post(CaseNode node, List<String> result) {
         if (node == null) {
             return;
@@ -79,13 +73,11 @@ public class TraversalTestReport {
         }
         return result;
     }
-
     static void compare(String label, List<String> expected, List<String> actual) {
         boolean same = expected.equals(actual);
         System.out.println("  " + label + " 預期=" + expected + " 實際=" + actual
                 + " 相同=" + same);
     }
-
     static void report(String title, CaseNode root,
                        List<String> pre, List<String> in,
                        List<String> post, List<String> level) {
@@ -95,7 +87,6 @@ public class TraversalTestReport {
         compare("postorder", post, postorder(root));
         compare("level    ", level, levelOrder(root));
     }
-
     public static void main(String[] args) {
         report("empty tree", null,
                 List.of(), List.of(), List.of(), List.of());
