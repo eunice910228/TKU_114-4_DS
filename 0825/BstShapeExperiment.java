@@ -6,9 +6,9 @@ class ExpNode {
         this.value = value;
     }
 }
+
 public class BstShapeExperiment {
     private ExpNode root;
-
     void add(int value) {
         root = add(root, value);
     }
@@ -32,22 +32,38 @@ public class BstShapeExperiment {
         }
         return 1 + Math.max(height(node.left), height(node.right));
     }
+    int comparisons(int target) {
+        int count = 0;
+        ExpNode current = root;
+        while (current != null) {
+            count++;
+            if (target == current.value) {
+                return count;
+            }
+            current = (target < current.value) ? current.left : current.right;
+        }
+        return count;
+    }
+    static void experiment(String title, int[] insertOrder) {
+        BstShapeExperiment tree = new BstShapeExperiment();
+        for (int value : insertOrder) {
+            tree.add(value);
+        }
+        int total = 0;
+        for (int value = 1; value <= 15; value++) {
+            total = total + tree.comparisons(value);
+        }
+        System.out.println(title);
+        System.out.println("height=" + tree.height());
+        System.out.println("搜尋1~15全部值的比較總數=" + total);
+    }
     public static void main(String[] args) {
         int[] ascending = new int[15];
         for (int i = 0; i < 15; i++) {
             ascending[i] = i + 1;
         }
         int[] balanced = { 8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15 };
-
-        BstShapeExperiment sorted = new BstShapeExperiment();
-        for (int value : ascending) {
-            sorted.add(value);
-        }
-        BstShapeExperiment shaped = new BstShapeExperiment();
-        for (int value : balanced) {
-            shaped.add(value);
-        }
-        System.out.println("升冪插入height=" + sorted.height());
-        System.out.println("平衡順序插入height=" + shaped.height());
+        experiment("升冪插入1~15", ascending);
+        experiment("接近平衡的順序插入", balanced);
     }
 }
