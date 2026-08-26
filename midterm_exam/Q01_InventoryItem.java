@@ -2,7 +2,6 @@ public class Q01_InventoryItem {
     private final String id;
     private final String name;
     private int stock;
-
     public Q01_InventoryItem(String id, String name, int stock) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("id不可為空");
