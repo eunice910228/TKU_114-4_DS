@@ -1,4 +1,6 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 class OrgNode {
@@ -69,6 +71,32 @@ public class OrganizationTreeReport {
         return false;
     }
 
+    static void printByLevel(OrgNode root) {
+        if (root == null) {
+            System.out.println("  (empty)");
+            return;
+        }
+        Deque<OrgNode> queue = new ArrayDeque<>();
+        queue.offerLast(root);
+        int level = 0;
+        while (!queue.isEmpty()) {
+            int count = queue.size();
+            System.out.print("  level " + level + ": ");
+            for (int i = 0; i < count; i++) {
+                OrgNode node = queue.pollFirst();
+                System.out.print(node.name + " ");
+                if (node.left != null) {
+                    queue.offerLast(node.left);
+                }
+                if (node.right != null) {
+                    queue.offerLast(node.right);
+                }
+            }
+            System.out.println();
+            level++;
+        }
+    }
+
     public static void main(String[] args) {
         OrgNode root = new OrgNode("註冊組");
         root.left = new OrgNode("課務組");
@@ -77,6 +105,9 @@ public class OrganizationTreeReport {
         root.left.right = new OrgNode("體育組");
         root.right.left = new OrgNode("文書組");
         root.right.right = new OrgNode("招生組");
+
+        System.out.println("組織架構");
+        printByLevel(root);
 
         System.out.println("findParent(體育組) =" + findParent(root, "體育組"));
         System.out.println("findParent(註冊組) =" + findParent(root, "註冊組"));
@@ -91,5 +122,6 @@ public class OrganizationTreeReport {
         System.out.println("empty tree");
         System.out.println("  findDepth =" + findDepth(null, "任何"));
         System.out.println("  pathFromRoot =" + pathFromRoot(null, "任何"));
+        printByLevel(null);
     }
 }
