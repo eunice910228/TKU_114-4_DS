@@ -6,7 +6,6 @@ class ExpNode {
         this.value = value;
     }
 }
-
 public class BstShapeExperiment {
     private ExpNode root;
     void add(int value) {
@@ -59,11 +58,14 @@ public class BstShapeExperiment {
     }
     public static void main(String[] args) {
         int[] ascending = new int[15];
+        int[] descending = new int[15];
         for (int i = 0; i < 15; i++) {
             ascending[i] = i + 1;
+            descending[i] = 15 - i;
         }
         int[] balanced = { 8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15 };
         experiment("升冪插入1~15", ascending);
+        experiment("降冪插入15~1", descending);
         experiment("接近平衡的順序插入", balanced);
     }
 }
