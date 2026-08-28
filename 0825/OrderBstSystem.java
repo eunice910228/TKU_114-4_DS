@@ -68,6 +68,43 @@ public class OrderBstSystem {
         order.amount = amount;
         return true;
     }
+    void rangeReport(int low, int high) {
+        System.out.println("訂單編號 " + low + "~" + high);
+        rangeReport(root, low, high);
+    }
+    private void rangeReport(OrderNode node, int low, int high) {
+        if (node == null) {
+            return;
+        }
+        if (node.order.orderId > low) {
+            rangeReport(node.left, low, high);
+        }
+        if (node.order.orderId >= low && node.order.orderId <= high) {
+            System.out.println("  " + node.order);
+        }
+        if (node.order.orderId < high) {
+            rangeReport(node.right, low, high);
+        }
+    }
+    void summary() {
+        int[] result = new int[3];
+        summary(root, result);
+        System.out.println("summary：共 " + result[0] + " 筆，有效金額 "
+                + result[1] + " 元，已取消 " + result[2] + " 筆");
+    }
+    private void summary(OrderNode node, int[] result) {
+        if (node == null) {
+            return;
+        }
+        summary(node.left, result);
+        result[0] = result[0] + 1;
+        if (node.order.cancelled) {
+            result[2] = result[2] + 1;
+        } else {
+            result[1] = result[1] + node.order.amount;
+        }
+        summary(node.right, result);
+    }
     public static void main(String[] args) {
         OrderBstSystem system = new OrderBstSystem();
         System.out.println("add 2077=" + system.add(new Order(2077, "Eunice", 777)));
@@ -83,5 +120,7 @@ public class OrderBstSystem {
         System.out.println("updateAmount 7520 改 7777=" + system.updateAmount(7520, 7777));
         System.out.println("updateAmount 1741 已取消=" + system.updateAmount(1741, 999));
         System.out.println("updateAmount 2077 負數=" + system.updateAmount(2077, -100));
+        system.rangeReport(1741, 1742);
+        system.summary();
     }
 }
