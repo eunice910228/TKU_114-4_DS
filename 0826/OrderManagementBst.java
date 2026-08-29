@@ -14,7 +14,6 @@ class MgmtOrder {
         return "#" + orderId + " " + customer + " " + amount + "元 [" + status + "]";
     }
 }
-
 class MgmtNode {
     MgmtOrder order;
     MgmtNode left;
@@ -23,7 +22,6 @@ class MgmtNode {
         this.order = order;
     }
 }
-
 public class OrderManagementBst {
     private MgmtNode root;
     boolean add(MgmtOrder order) {
@@ -114,7 +112,7 @@ public class OrderManagementBst {
             idRangeReport(node.left, low, high);
         }
         if (node.order.orderId >= low && node.order.orderId <= high) {
-            System.out.println("  " + node.order);
+            System.out.println(node.order);
         }
         if (node.order.orderId < high) {
             idRangeReport(node.right, low, high);
