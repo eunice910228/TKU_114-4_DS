@@ -2,14 +2,12 @@ class CmpNode {
     int value;
     CmpNode left;
     CmpNode right;
-
     CmpNode(int value) {
         this.value = value;
     }
 }
 public class TreeShapeComparison {
     private CmpNode root;
-
     void add(int value) {
         root = add(root, value);
     }
@@ -54,9 +52,11 @@ public class TreeShapeComparison {
         for (int value = 1; value <= 15; value++) {
             total = total + tree.comparisons(value);
         }
+        int missing = tree.comparisons(16);
         System.out.println(title);
         System.out.println("height=" + tree.height());
         System.out.println("搜尋全部15個key的比較總數=" + total);
+        System.out.println("搜尋missing key16的比較次數=" + missing);
     }
     public static void main(String[] args) {
         int[] ascending = new int[15];
