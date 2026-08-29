@@ -33,6 +33,31 @@ public class TreeShapeComparison {
         }
         return 1 + Math.max(height(node.left), height(node.right));
     }
+    int comparisons(int target) {
+        int count = 0;
+        CmpNode current = root;
+        while (current != null) {
+            count++;
+            if (target == current.value) {
+                return count;
+            }
+            current = (target < current.value) ? current.left : current.right;
+        }
+        return count;
+    }
+    static void compare(String title, int[] insertOrder) {
+        TreeShapeComparison tree = new TreeShapeComparison();
+        for (int value : insertOrder) {
+            tree.add(value);
+        }
+        int total = 0;
+        for (int value = 1; value <= 15; value++) {
+            total = total + tree.comparisons(value);
+        }
+        System.out.println(title);
+        System.out.println("height=" + tree.height());
+        System.out.println("搜尋全部15個key的比較總數=" + total);
+    }
     public static void main(String[] args) {
         int[] ascending = new int[15];
         int[] descending = new int[15];
@@ -41,15 +66,8 @@ public class TreeShapeComparison {
             descending[i] = 15 - i;
         }
         int[] balanced = { 8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7, 9, 11, 13, 15 };
-
-        int[][] orders = { ascending, descending, balanced };
-        String[] titles = { "升冪插入 1~15", "降冪插入 15~1", "接近平衡插入" };
-        for (int i = 0; i < orders.length; i++) {
-            TreeShapeComparison tree = new TreeShapeComparison();
-            for (int value : orders[i]) {
-                tree.add(value);
-            }
-            System.out.println(titles[i] + "height=" + tree.height());
-        }
+        compare("升冪插入1~15", ascending);
+        compare("降冪插入15~1", descending);
+        compare("接近平衡插入", balanced);
     }
 }
