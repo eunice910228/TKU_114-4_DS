@@ -21,7 +21,7 @@ public class EmergencyTriageQueue {
                     .thenComparing(p -> p.chartNo));
     private long sequence;
     boolean checkIn(String chartNo, int level) {
-        if (chartNo == null || level < 1 || level > 5) {
+        if (chartNo == null || chartNo.isBlank() || level < 1 || level > 5) {
             return false;
         }
         queue.offer(new Patient(chartNo, level, sequence));
@@ -45,6 +45,8 @@ public class EmergencyTriageQueue {
         System.out.println("報到P04 危急度2=" + triage.checkIn("P04", 2));
         System.out.println("報到P05 危急度1=" + triage.checkIn("P05", 1));
         System.out.println("危急度0 報到=" + triage.checkIn("P06", 0));
+        System.out.println("危急度6 報到=" + triage.checkIn("P07", 6));
+        System.out.println("空白病歷號 報到=" + triage.checkIn("  ", 3));
         System.out.println("目前人數=" + triage.waitingCount());
         System.out.println("下一位=" + triage.peekNext());
         System.out.println("叫號順序");

@@ -30,14 +30,40 @@ public class EventSimulationQueue {
         sequence++;
         return sequence - 1;
     }
+    boolean cancel(int eventSequence) {
+        if (eventSequence < 0 || eventSequence >= sequence) {
+            return false;
+        }
+        if (cancelled.contains(eventSequence)) {
+            return false;
+        }
+        cancelled.add(eventSequence);
+        return true;
+    }
+    void run() {
+        System.out.println("執行紀錄");
+        while (!events.isEmpty()) {
+            SimEvent event = events.poll();
+            if (cancelled.contains(event.sequence)) {
+                System.out.println("跳過已取消 " + event);
+                continue;
+            }
+            System.out.println("執行 " + event);
+        }
+    }
     public static void main(String[] args) {
         EventSimulationQueue sim = new EventSimulationQueue();
-        int e0 = sim.schedule(30, "開幕");
-        int e1 = sim.schedule(10, "報到");
-        int e2 = sim.schedule(20, "彩排");
-        int e3 = sim.schedule(20, "音控測試");
-        int e4 = sim.schedule(50, "散場");
+        int e0 = sim.schedule(45, "資料庫備份");
+        int e1 = sim.schedule(5, "病毒掃描");
+        int e2 = sim.schedule(20, "憑證更新");
+        int e3 = sim.schedule(45, "日誌清理");
+        int e4 = sim.schedule(90, "主機重啟");
         System.out.println("排入事件編號=" + e0 + "," + e1 + "," + e2 + "," + e3 + "," + e4);
-        System.out.println("負數時間 schedule=" + sim.schedule(-5, "錯誤事件"));
+        System.out.println("負數時間 schedule=" + sim.schedule(-5, "錯誤排程"));
+        System.out.println("空白類型 schedule=" + sim.schedule(10, "  "));
+        System.out.println("cancel 事件" + e3 + "=" + sim.cancel(e3));
+        System.out.println("重複 cancel 事件" + e3 + "=" + sim.cancel(e3));
+        System.out.println("cancel 不存在事件99=" + sim.cancel(99));
+        sim.run();
     }
 }
