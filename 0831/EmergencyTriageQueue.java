@@ -11,7 +11,7 @@ class Patient {
     }
     @Override
     public String toString() {
-        return chartNo + "危急度" + level;
+        return chartNo + " 危急度" + level;
     }
 }
 public class EmergencyTriageQueue {
@@ -31,6 +31,12 @@ public class EmergencyTriageQueue {
     Patient peekNext() {
         return queue.peek();
     }
+    Patient callNext() {
+        return queue.poll();
+    }
+    int waitingCount() {
+        return queue.size();
+    }
     public static void main(String[] args) {
         EmergencyTriageQueue triage = new EmergencyTriageQueue();
         System.out.println("報到P01 危急度3=" + triage.checkIn("P01", 3));
@@ -39,6 +45,14 @@ public class EmergencyTriageQueue {
         System.out.println("報到P04 危急度2=" + triage.checkIn("P04", 2));
         System.out.println("報到P05 危急度1=" + triage.checkIn("P05", 1));
         System.out.println("危急度0 報到=" + triage.checkIn("P06", 0));
-        System.out.println("下一位= " + triage.peekNext());
+        System.out.println("目前人數=" + triage.waitingCount());
+        System.out.println("下一位=" + triage.peekNext());
+        System.out.println("叫號順序");
+        while (triage.waitingCount() > 0) {
+            System.out.println(triage.callNext());
+        }
+        System.out.println("空佇列 peek=" + triage.peekNext());
+        System.out.println("空佇列 call=" + triage.callNext());
+        System.out.println("目前人數=" + triage.waitingCount());
     }
 }
