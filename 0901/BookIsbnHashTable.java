@@ -76,7 +76,7 @@ public class BookIsbnHashTable {
     void bucketReport() {
         System.out.println("bucket 分布");
         for (int i = 0; i < buckets.size(); i++) {
-            System.out.println("  bucket" + i + "=" + buckets.get(i));
+            System.out.println("bucket" + i + "=" + buckets.get(i));
         }
     }
     public static void main(String[] args) {
