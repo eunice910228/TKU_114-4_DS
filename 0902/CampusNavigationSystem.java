@@ -68,6 +68,19 @@ public class CampusNavigationSystem {
         Collections.reverse(path);
         return path;
     }
+    void routeReport(String start, String target) {
+        List<String> path = shortestPath(start, target);
+        System.out.print(start + "->" + target + "=");
+        if (path.isEmpty()) {
+            System.out.println("無法到達");
+            return;
+        }
+        List<String> names = new ArrayList<>();
+        for (String code : path) {
+            names.add(places.get(code));
+        }
+        System.out.println(names + "，經過" + (path.size() - 1) + "條路");
+    }
     public static void main(String[] args) {
         CampusNavigationSystem campus = new CampusNavigationSystem();
         System.out.println("addPlace G 大門=" + campus.addPlace("G", "大門"));
@@ -91,5 +104,8 @@ public class CampusNavigationSystem {
         System.out.println("G->G=" + campus.shortestPath("G", "G"));
         System.out.println("不存在地點 G->X=" + campus.shortestPath("G", "X"));
         System.out.println("空系統=" + new CampusNavigationSystem().shortestPath("G", "D"));
+        campus.routeReport("G", "D");
+        campus.routeReport("G", "E");
+        campus.routeReport("G", "P");
     }
 }
