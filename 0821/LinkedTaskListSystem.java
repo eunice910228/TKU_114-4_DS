@@ -15,6 +15,7 @@ class Task {
         return id + " " + title + " P" + priority;
     }
 }
+
 class TaskNode {
     Task task;
     TaskNode next;
@@ -23,6 +24,7 @@ class TaskNode {
         this.next = null;
     }
 }
+
 class TaskLinkedList {
     private TaskNode head;
     private TaskNode tail;
@@ -105,6 +107,7 @@ class TaskLinkedList {
         }
         return false;
     }
+	
     boolean insertAfter(String existingId, Task task) {
         if (task == null || findById(task.getId()) != null) {
             return false;
@@ -122,12 +125,15 @@ class TaskLinkedList {
         size++;
         return true;
     }
+	
     int size() {
         return size;
     }
+	
     boolean isEmpty() {
         return head == null;
     }
+	
     void printAll() {
         if (head == null) {
             System.out.println("空清單 size=0 head=null tail=null");
@@ -146,11 +152,13 @@ class TaskLinkedList {
                 + " head=" + head.task.getId() + " tail=" + tail.task.getId());
     }
 }
+
 public class LinkedTaskListSystem {
     static void show(String label, boolean ok, TaskLinkedList list) {
         System.out.println("  " + label + " = " + ok);
         list.printAll();
     }
+	
     public static void main(String[] args) {
         TaskLinkedList list = new TaskLinkedList();
         System.out.println("空 list");
